@@ -24,8 +24,13 @@ task sourceJar(type: Jar) {
         from android.sourceSets.main.java.srcDirs
         classifier "source"
     }catch (Exception e) {
-        if (isTrue('publishSource')) {
-            ext.publishSource = false
+        try {
+            from sourceSets.main.allJava
+            classifier "source"
+        }catch (Exception e1) {
+            if (getNeedPublishSource()) {
+                ext.publishSource = false
+            }
         }
     }
 }
@@ -50,6 +55,15 @@ def readProperties(name) {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
     return properties.getProperty(name)
+}
+
+def getNeedPublishSource() {
+    if (!ext.has('publishSource')) {
+        ext.set('publishSource', true)
+        return true
+    }
+
+    return ext.get('publishSource')
 }
 
 def getPublishArtifactId() {
@@ -113,11 +127,19 @@ publishing {
             artifactId getPublishArtifactId()
             version "${publishVersion}"
 
-            if (isTrue('publishSource'))
+            if (getNeedPublishSource())
                 artifact(sourceJar)
 
-            if (!stringNonNull('publishFile'))
-                artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+            if (!stringNonNull('publishFile')) {
+                try {
+                    if (file("${buildDir}/outputs/aar/${project.name}-release.aar").exists())
+                        artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+                    else
+                        from components.java
+                }catch (Exception e) {
+                    from components.java
+                }
+            }
             else
                 artifact("${publishFile}")
 
@@ -134,11 +156,17 @@ publishing {
             artifactId getPublishArtifactId()
             version "${publishVersion}-SNAPSHOT"
 
-            if (isTrue('publishSource'))
+            if (getNeedPublishSource())
                 artifact(sourceJar)
 
-            if (!stringNonNull('publishFile'))
-                artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+            if (!stringNonNull('publishFile')) {
+
+                if (file("${buildDir}/outputs/aar/${project.name}-release.aar").exists())
+                    artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+                else
+                    from components.java
+
+            }
             else
                 artifact("${publishFile}")
 

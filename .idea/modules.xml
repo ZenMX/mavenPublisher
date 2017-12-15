@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/MavenPublisher.iml" filepath="$PROJECT_DIR$/MavenPublisher.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/mylibrary/mylibrary.iml" filepath="$PROJECT_DIR$/mylibrary/mylibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testJavaLibrary/testJavaLibrary.iml" filepath="$PROJECT_DIR$/testJavaLibrary/testJavaLibrary.iml" />
     </modules>
   </component>
 </project>
