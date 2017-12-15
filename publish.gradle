@@ -24,10 +24,30 @@ task sourceJar(type: Jar) {
         from android.sourceSets.main.java.srcDirs
         classifier "source"
     }catch (Exception e) {
+        System.out.println(e.toString())
+        e.printStackTrace()
         try {
             from sourceSets.main.allJava
             classifier "source"
         }catch (Exception e1) {
+            System.out.println(e1.toString())
+            e1.printStackTrace()
+            if (getNeedPublishSource()) {
+                ext.publishSource = false
+            }
+        }
+    }
+}
+
+def testSourceCode() {
+    try {
+        def i = android.sourceSets.main.java.srcDirs
+    }catch (Exception e) {
+        e.printStackTrace()
+        try {
+            def i = sourceSets.main.allJava
+        }catch (Exception e1) {
+            e1.printStackTrace()
             if (getNeedPublishSource()) {
                 ext.publishSource = false
             }
@@ -127,6 +147,8 @@ publishing {
             artifactId getPublishArtifactId()
             version "${publishVersion}"
 
+            testSourceCode()
+
             if (getNeedPublishSource())
                 artifact(sourceJar)
 
@@ -155,6 +177,8 @@ publishing {
             groupId "${publishGroupId}"
             artifactId getPublishArtifactId()
             version "${publishVersion}-SNAPSHOT"
+
+            testSourceCode()
 
             if (getNeedPublishSource())
                 artifact(sourceJar)
