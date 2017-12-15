@@ -57,11 +57,20 @@ def getPublishArtifactId() {
 }
 
 def getPublisherUserName() {
-    ext.has('publisherUserName') ? ext.get('publisherUserName') : readProperties('publisherUserName')
+    def ret = ext.has('publisherUserName') ? ext.get('publisherUserName') : readProperties('publisherUserName')
+    if (ret == null) {
+        new NullPointerException("publisherUserName is null").printStackTrace()
+    }
+    return ret
 }
 
 def getPublisherPassword() {
-    return ext.has('publisherPassword') ? ext.get('publisherPassword') : readProperties('publisherPassword')
+    def ret = ext.has('publisherPassword') ? ext.get('publisherPassword') : readProperties('publisherPassword')
+
+    if (ret == null) {
+        new NullPointerException("publisherPassword is null").printStackTrace()
+    }
+    return ret
 }
 
 def getPublishUrlSnapshot() {
@@ -172,7 +181,13 @@ private void addDependencies(node, isSnapshot) {
     }
     def dependencies = node.appendNode('dependencies')
 
+    def compile = true
     try {
+        def dependencies1 = configurations.compile.allDependencies
+    }catch (Exception e) {
+        compile = false
+    }
+    if (compile) {
         configurations.compile.allDependencies.each { dependency ->
             if (isValidDependency(dependency)) {
                 if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
@@ -181,8 +196,7 @@ private void addDependencies(node, isSnapshot) {
                     if (!isUnspecifiedDependency(dependency)) {
                         dependencyNode.appendNode('groupId', dependency.group)
                         dependencyNode.appendNode('version', dependency.version)
-                    }
-                    else {
+                    } else {
                         dependencyNode.appendNode('groupId', "${publishGroupId}")
                         if (isSnapshot)
                             dependencyNode.appendNode('version', "${publishVersion}-SNAPSHOT")
@@ -202,8 +216,6 @@ private void addDependencies(node, isSnapshot) {
                 }
             }
         }
-    } catch (Exception e) {
-        e.printStackTrace()
     }
 
     extraDependencies(dependencies)
