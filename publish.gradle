@@ -159,7 +159,11 @@ publishing {
                     else
                         from components.java
                 }catch (Exception e) {
-                    from components.java
+                    try {
+                        from components.java
+                    }catch (Exception e1) {
+
+                    }
                 }
             }
             else
@@ -184,12 +188,18 @@ publishing {
                 artifact(sourceJar)
 
             if (!stringNonNull('publishFile')) {
+                try {
+                    if (file("${buildDir}/outputs/aar/${project.name}-release.aar").exists())
+                        artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+                    else
+                        from components.java
+                }catch (Exception e) {
+                    try {
+                        from components.java
+                    }catch (Exception e1) {
 
-                if (file("${buildDir}/outputs/aar/${project.name}-release.aar").exists())
-                    artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
-                else
-                    from components.java
-
+                    }
+                }
             }
             else
                 artifact("${publishFile}")
