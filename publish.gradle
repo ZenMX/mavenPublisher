@@ -86,11 +86,11 @@ def getNeedPublishSource() {
     return ext.get('publishSource')
 }
 
-def getPublishArtifactId() {
-    ext.has('publishArtifactId') ? ext.get('PublishArtifactId') : project.name;
+def _getPublishArtifactId() {
+    ext.has('publishArtifactId') ? ext.get('publishArtifactId') : project.name;
 }
 
-def getPublisherUserName() {
+def _getPublisherUserName() {
     def ret = ext.has('publisherUserName') ? ext.get('publisherUserName') : readProperties('publisherUserName')
     if (ret == null) {
         new NullPointerException("publisherUserName is null").printStackTrace()
@@ -98,7 +98,7 @@ def getPublisherUserName() {
     return ret
 }
 
-def getPublisherPassword() {
+def _getPublisherPassword() {
     def ret = ext.has('publisherPassword') ? ext.get('publisherPassword') : readProperties('publisherPassword')
 
     if (ret == null) {
@@ -107,11 +107,11 @@ def getPublisherPassword() {
     return ret
 }
 
-def getPublishUrlSnapshot() {
+def _getPublishUrlSnapshot() {
     return ext.has('publishUrlSnapshot') ? ext.get('publishUrlSnapshot') : readProperties('publishUrlSnapshot')
 }
 
-def getPublishUrlRelease() {
+def _getPublishUrlRelease() {
     return ext.has('publishUrlRelease') ? ext.get('publishUrlRelease') : readProperties('publishUrlRelease')
 }
 
@@ -144,7 +144,7 @@ publishing {
             ext.repo = 'Release'
 
             groupId "${publishGroupId}"
-            artifactId getPublishArtifactId()
+            artifactId _getPublishArtifactId()
             version "${publishVersion}"
 
             testSourceCode()
@@ -179,7 +179,7 @@ publishing {
             ext.repo = 'Snapshot'
 
             groupId "${publishGroupId}"
-            artifactId getPublishArtifactId()
+            artifactId _getPublishArtifactId()
             version "${publishVersion}-SNAPSHOT"
 
             testSourceCode()
@@ -214,21 +214,21 @@ publishing {
         maven {
             name 'Snapshot'
             credentials {
-                username getPublisherUserName()
-                password getPublisherPassword()
+                username _getPublisherUserName()
+                password _getPublisherPassword()
             }
 
-            url getPublishUrlSnapshot()
+            url _getPublishUrlSnapshot()
         }
 
         maven {
             name 'Release'
             credentials {
-                username getPublisherUserName()
-                password getPublisherPassword()
+                username _getPublisherUserName()
+                password _getPublisherPassword()
             }
 
-            url getPublishUrlRelease()
+            url _getPublishUrlRelease()
         }
     }
 }
