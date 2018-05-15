@@ -9,8 +9,8 @@ apply plugin: 'maven-publish'
  publishVersionCode = 111
  publishSource = false
  publishFile = project.file('android-ad-sdk.aar')
- publisherUserName = 'admin'
- publisherPassword = 'admin123'
+ publisherUserName = 'userName'
+ publisherPassword = 'userPassword'
  publishUrlSnapshot = 'http://10.7.0.7:8098/nexus/content/repositories/snapshots/'
  publishDependencies = [['com.zenjoy.code', 'aol-android-ad-sdk-wrapper', "${aolVersion}"]
  ,['com.zenjoy.code', 'aol-android-google-ad-mm-adapter-wrapper', "${aolVersion}"]]
@@ -90,8 +90,21 @@ def _getPublishArtifactId() {
     ext.has('publishArtifactId') ? ext.get('publishArtifactId') : project.name;
 }
 
+static def _getEnv(name) {
+    return System.getenv(name)
+}
+
+def _getString(name) {
+    def value = ext.has(name) ? ext.get(name) : readProperties(name)
+    if (value == null) {
+        value = _getEnv(name)
+    }
+
+    return value
+}
+
 def _getPublisherUserName() {
-    def ret = ext.has('publisherUserName') ? ext.get('publisherUserName') : readProperties('publisherUserName')
+    def ret = _getString('publisherUserName')
     if (ret == null) {
         new NullPointerException("publisherUserName is null").printStackTrace()
     }
@@ -99,7 +112,7 @@ def _getPublisherUserName() {
 }
 
 def _getPublisherPassword() {
-    def ret = ext.has('publisherPassword') ? ext.get('publisherPassword') : readProperties('publisherPassword')
+    def ret = _getString('publisherPassword')
 
     if (ret == null) {
         new NullPointerException("publisherPassword is null").printStackTrace()
@@ -108,11 +121,11 @@ def _getPublisherPassword() {
 }
 
 def _getPublishUrlSnapshot() {
-    return ext.has('publishUrlSnapshot') ? ext.get('publishUrlSnapshot') : readProperties('publishUrlSnapshot')
+    return _getString('publishUrlSnapshot')
 }
 
 def _getPublishUrlRelease() {
-    return ext.has('publishUrlRelease') ? ext.get('publishUrlRelease') : readProperties('publishUrlRelease')
+    return _getString('publishUrlRelease')
 }
 
 def extraDependencies(dependencies) {
