@@ -299,5 +299,79 @@ private void addDependencies(node, isSnapshot) {
         }
     }
 
+    def imp = true
+    try {
+        def dependencies1 = configurations.implementation.allDependencies
+    }catch (Exception e) {
+        imp = false
+    }
+    if (imp) {
+        configurations.implementation.allDependencies.each { dependency ->
+            if (isValidDependency(dependency)) {
+                if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
+                    def dependencyNode = dependencies.appendNode('dependency')
+                    dependencyNode.appendNode('artifactId', dependency.name)
+                    if (!isUnspecifiedDependency(dependency)) {
+                        dependencyNode.appendNode('groupId', dependency.group)
+                        dependencyNode.appendNode('version', dependency.version)
+                    } else {
+                        dependencyNode.appendNode('groupId', "${publishGroupId}")
+                        if (isSnapshot)
+                            dependencyNode.appendNode('version', "${publishVersion}-SNAPSHOT")
+                        else
+                            dependencyNode.appendNode('version', "${publishVersion}")
+                    }
+
+                    //If there are any exclusions in dependency
+                    if (dependency.excludeRules != null && dependency.excludeRules.size() > 0) {
+                        def exclusionsNode = dependencyNode.appendNode('exclusions')
+                        dependency.excludeRules.each { rule ->
+                            def exclusionNode = exclusionsNode.appendNode('exclusion')
+                            exclusionNode.appendNode('groupId', rule.group)
+                            exclusionNode.appendNode('artifactId', rule.module)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    def api = true
+    try {
+        def dependencies1 = configurations.api.allDependencies
+    }catch (Exception e) {
+        api = false
+    }
+    if (api) {
+        configurations.api.allDependencies.each { dependency ->
+            if (isValidDependency(dependency)) {
+                if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
+                    def dependencyNode = dependencies.appendNode('dependency')
+                    dependencyNode.appendNode('artifactId', dependency.name)
+                    if (!isUnspecifiedDependency(dependency)) {
+                        dependencyNode.appendNode('groupId', dependency.group)
+                        dependencyNode.appendNode('version', dependency.version)
+                    } else {
+                        dependencyNode.appendNode('groupId', "${publishGroupId}")
+                        if (isSnapshot)
+                            dependencyNode.appendNode('version', "${publishVersion}-SNAPSHOT")
+                        else
+                            dependencyNode.appendNode('version', "${publishVersion}")
+                    }
+
+                    //If there are any exclusions in dependency
+                    if (dependency.excludeRules != null && dependency.excludeRules.size() > 0) {
+                        def exclusionsNode = dependencyNode.appendNode('exclusions')
+                        dependency.excludeRules.each { rule ->
+                            def exclusionNode = exclusionsNode.appendNode('exclusion')
+                            exclusionNode.appendNode('groupId', rule.group)
+                            exclusionNode.appendNode('artifactId', rule.module)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     extraDependencies(dependencies)
 }
