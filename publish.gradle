@@ -25,13 +25,13 @@ task sourceJar(type: Jar) {
         classifier "sources"
     }catch (Exception e) {
         System.out.println(e.toString())
-        e.printStackTrace()
+//        e.printStackTrace()
         try {
             from sourceSets.main.allJava
             classifier "sources"
         }catch (Exception e1) {
             System.out.println(e1.toString())
-            e1.printStackTrace()
+//            e1.printStackTrace()
             if (getNeedPublishSource()) {
                 ext.publishSource = false
             }
@@ -43,11 +43,11 @@ def testSourceCode() {
     try {
         def i = android.sourceSets.main.java.srcDirs
     }catch (Exception e) {
-        e.printStackTrace()
+//        e.printStackTrace()
         try {
             def i = sourceSets.main.allJava
         }catch (Exception e1) {
-            e1.printStackTrace()
+//            e1.printStackTrace()
             if (getNeedPublishSource()) {
                 ext.publishSource = false
             }
@@ -112,7 +112,7 @@ def _getString(name) {
 def _getPublisherUserName() {
     def ret = _getString('publisherUserName')
     if (ret == null) {
-        new NullPointerException("publisherUserName is null").printStackTrace()
+//        new NullPointerException("publisherUserName is null").printStackTrace()
     }
     return ret
 }
@@ -121,7 +121,7 @@ def _getPublisherPassword() {
     def ret = _getString('publisherPassword')
 
     if (ret == null) {
-        new NullPointerException("publisherPassword is null").printStackTrace()
+//        new NullPointerException("publisherPassword is null").printStackTrace()
     }
     return ret
 }
