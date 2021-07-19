@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 
 /** example
  ext {
- publishDependencies = true
+ disableDependencies = false
  publishDesc = 'AD lib for mx player.'
  publishGroupId = 'com.zenjoy.code'
  publishArtifactId = 'adlibrary'
@@ -93,13 +93,13 @@ def getNeedPublishSource() {
     return ext.get('publishSource')
 }
 
-def getNeedPublishDependencies() {
-    if (!ext.has('publishDependencies')) {
-        ext.set('publishDependencies', true)
+def getDisablePublishDependencies() {
+    if (!ext.has('disableDependencies')) {
+        ext.set('disableDependencies', false)
         return true
     }
 
-    return ext.get('publishDependencies')
+    return ext.get('disableDependencies')
 }
 
 def _getPublishArtifactId() {
@@ -178,7 +178,7 @@ publishing {
 
             testSourceCode()
 
-            def publishDe = getNeedPublishDependencies()
+            def disablePublishDependencies = getDisablePublishDependencies()
 
             if (getNeedPublishSource())
                 artifact(sourceJar)
@@ -202,7 +202,7 @@ publishing {
 
             pom.withXml {
                 def node = asNode()
-                addDependencies(node, false, publishDe)
+                addDependencies(node, false, !disablePublishDependencies)
             }
         }
 
@@ -237,7 +237,7 @@ publishing {
 
             pom.withXml {
                 def node = asNode()
-                addDependencies(node, true, publishDe)
+                addDependencies(node, true, !disablePublishDependencies)
             }
         }
     }
