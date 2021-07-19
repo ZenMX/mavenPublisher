@@ -2,6 +2,7 @@ apply plugin: 'maven-publish'
 
 /** example
  ext {
+ publishDependencies = true
  publishDesc = 'AD lib for mx player.'
  publishGroupId = 'com.zenjoy.code'
  publishArtifactId = 'adlibrary'
@@ -92,6 +93,15 @@ def getNeedPublishSource() {
     return ext.get('publishSource')
 }
 
+def getNeedPublishDependencies() {
+    if (!ext.has('publishDependencies')) {
+        ext.set('publishDependencies', true)
+        return true
+    }
+
+    return ext.get('publishDependencies')
+}
+
 def _getPublishArtifactId() {
     ext.has('publishArtifactId') ? ext.get('publishArtifactId') : project.name;
 }
@@ -168,6 +178,8 @@ publishing {
 
             testSourceCode()
 
+            def publishDe = getNeedPublishDependencies()
+
             if (getNeedPublishSource())
                 artifact(sourceJar)
 
@@ -190,7 +202,7 @@ publishing {
 
             pom.withXml {
                 def node = asNode()
-                addDependencies(node, false)
+                addDependencies(node, false, publishDe)
             }
         }
 
@@ -225,7 +237,7 @@ publishing {
 
             pom.withXml {
                 def node = asNode()
-                addDependencies(node, true)
+                addDependencies(node, true, publishDe)
             }
         }
     }
@@ -252,7 +264,7 @@ publishing {
     }
 }
 
-private void addDependencies(node, isSnapshot) {
+private void addDependencies(node, isSnapshot, publishDependencies) {
     if (stringNonNull('publishDesc')) {
         node.appendNode('description',
                 "${publishDesc}")
@@ -268,7 +280,7 @@ private void addDependencies(node, isSnapshot) {
     }catch (Exception e) {
         compile = false
     }
-    if (compile) {
+    if (publishDependencies && compile) {
         configurations.compile.allDependencies.each { dependency ->
             if (isValidDependency(dependency)) {
                 if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
@@ -305,7 +317,7 @@ private void addDependencies(node, isSnapshot) {
     }catch (Exception e) {
         imp = false
     }
-    if (imp) {
+    if (publishDependencies && imp) {
         configurations.implementation.allDependencies.each { dependency ->
             if (isValidDependency(dependency)) {
                 if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
@@ -342,7 +354,7 @@ private void addDependencies(node, isSnapshot) {
     }catch (Exception e) {
         api = false
     }
-    if (api) {
+    if (publishDependencies && api) {
         configurations.api.allDependencies.each { dependency ->
             if (isValidDependency(dependency)) {
                 if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
