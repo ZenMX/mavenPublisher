@@ -96,7 +96,7 @@ def getNeedPublishSource() {
 def getDisablePublishDependencies() {
     if (!ext.has('disableDependencies')) {
         ext.set('disableDependencies', false)
-        return true
+        return false
     }
 
     return ext.get('disableDependencies')
