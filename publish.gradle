@@ -264,6 +264,30 @@ publishing {
     }
 }
 
+private boolean isAdded(added, dependency) {
+    def groupId = dependency.group
+    def artifactId = dependency.name
+    def version = dependency.version
+
+    if (isUnspecifiedDependency(dependency)) {
+        groupId = "${publishGroupId}"
+    }
+
+    return added.contains(groupId + ":" + artifactId)
+}
+
+private addIn(added, dependency) {
+    def groupId = dependency.group
+    def artifactId = dependency.name
+    def version = dependency.version
+
+    if (isUnspecifiedDependency(dependency)) {
+        groupId = "${publishGroupId}"
+    }
+
+    added.add(groupId + ":" + artifactId)
+}
+
 private void addDependencies(node, isSnapshot, publishDependencies) {
     if (stringNonNull('publishDesc')) {
         node.appendNode('description',
@@ -273,6 +297,8 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
                 project.name)
     }
     def dependencies = node.appendNode('dependencies')
+
+    HashSet<String> added = new HashSet<>();
 
     def compile = true
     try {
@@ -297,6 +323,8 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
                             dependencyNode.appendNode('version', "${publishVersion}")
                     }
 
+                    addIn(added, dependency)
+
                     //If there are any exclusions in dependency
                     if (dependency.excludeRules != null && dependency.excludeRules.size() > 0) {
                         def exclusionsNode = dependencyNode.appendNode('exclusions')
@@ -320,7 +348,7 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
     if (publishDependencies && imp) {
         configurations.implementation.allDependencies.each { dependency ->
             if (isValidDependency(dependency)) {
-                if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
+                if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency)) && !isAdded(added, dependency)) {
                     def dependencyNode = dependencies.appendNode('dependency')
                     dependencyNode.appendNode('artifactId', dependency.name)
                     if (!isUnspecifiedDependency(dependency)) {
@@ -333,6 +361,8 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
                         else
                             dependencyNode.appendNode('version', "${publishVersion}")
                     }
+
+                    addIn(added, dependency)
 
                     //If there are any exclusions in dependency
                     if (dependency.excludeRules != null && dependency.excludeRules.size() > 0) {
@@ -357,7 +387,7 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
     if (publishDependencies && api) {
         configurations.api.allDependencies.each { dependency ->
             if (isValidDependency(dependency)) {
-                if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))) {
+                if (!(isUnspecifiedIgnored() && isUnspecifiedDependency(dependency))  && !isAdded(added, dependency)) {
                     def dependencyNode = dependencies.appendNode('dependency')
                     dependencyNode.appendNode('artifactId', dependency.name)
                     if (!isUnspecifiedDependency(dependency)) {
@@ -370,6 +400,8 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
                         else
                             dependencyNode.appendNode('version', "${publishVersion}")
                     }
+
+                    addIn(added, dependency)
 
                     //If there are any exclusions in dependency
                     if (dependency.excludeRules != null && dependency.excludeRules.size() > 0) {
