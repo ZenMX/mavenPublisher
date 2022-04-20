@@ -250,6 +250,7 @@ publishing {
             }
 
             url _getPublishUrlSnapshot()
+            allowInsecureProtocol = true
         }
 
         maven {
@@ -260,6 +261,7 @@ publishing {
             }
 
             url _getPublishUrlRelease()
+            allowInsecureProtocol = true
         }
     }
 }
