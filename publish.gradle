@@ -84,6 +84,12 @@ def readProperties(name) {
     return null
 }
 
+def gradleMajorVersion() {
+    def v = gradle.gradleVersion
+    int index = v.indexOf('.')
+    return Integer.parseInt(v.substring(0, index))
+}
+
 def getNeedPublishSource() {
     if (!ext.has('publishSource')) {
         ext.set('publishSource', true)
@@ -242,28 +248,53 @@ publishing {
         }
     }
     repositories {
-        maven {
-            name 'Snapshot'
-            credentials {
-                username _getPublisherUserName()
-                password _getPublisherPassword()
-            }
+        if (gradleMajorVersion() >= 7) {
+            maven {
+                name 'Snapshot'
+                credentials {
+                    username _getPublisherUserName()
+                    password _getPublisherPassword()
+                }
 
-            url _getPublishUrlSnapshot()
-            allowInsecureProtocol = true
+                url _getPublishUrlSnapshot()
+                allowInsecureProtocol = true
+            }
+        } else {
+            maven {
+                name 'Snapshot'
+                credentials {
+                    username _getPublisherUserName()
+                    password _getPublisherPassword()
+                }
+
+                url _getPublishUrlSnapshot()
+            }
         }
 
-        maven {
-            name 'Release'
-            credentials {
-                username _getPublisherUserName()
-                password _getPublisherPassword()
-            }
+        if (gradleMajorVersion() >= 7) {
+            maven {
+                name 'Release'
+                credentials {
+                    username _getPublisherUserName()
+                    password _getPublisherPassword()
+                }
 
-            url _getPublishUrlRelease()
-            allowInsecureProtocol = true
+                url _getPublishUrlRelease()
+                allowInsecureProtocol = true
+            }
+        } else {
+            maven {
+                name 'Release'
+                credentials {
+                    username _getPublisherUserName()
+                    password _getPublisherPassword()
+                }
+
+                url _getPublishUrlRelease()
+            }
         }
     }
+
 }
 
 private boolean isAdded(added, dependency) {
