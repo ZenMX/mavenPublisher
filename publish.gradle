@@ -329,6 +329,17 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
         node.appendNode('description',
                 project.name)
     }
+
+    def dep = node.get("dependencies")
+//    println("exist: ${dep}")
+    if (dep != null) {
+        try {
+            node.remove(dep)
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+    }
+
     def dependencies = node.appendNode('dependencies')
 
     HashSet<String> added = new HashSet<>();
