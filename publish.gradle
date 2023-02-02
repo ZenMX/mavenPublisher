@@ -193,6 +193,9 @@ publishing {
                 try {
                     if (file("${buildDir}/outputs/aar/${project.name}-release.aar").exists())
                         artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+                    else if (file("${buildDir}/outputs/aar/${project.name}-debug.aar").exists()) {
+                        artifact("${buildDir}/outputs/aar/${project.name}-debug.aar")
+                    }
                     else
                         from components.java
                 }catch (Exception e) {
@@ -228,6 +231,8 @@ publishing {
                 try {
                     if (file("${buildDir}/outputs/aar/${project.name}-release.aar").exists())
                         artifact("${buildDir}/outputs/aar/${project.name}-release.aar")
+                    else if (file("${buildDir}/outputs/aar/${project.name}-debug.aar").exists())
+                        artifact("${buildDir}/outputs/aar/${project.name}-debug.aar")
                     else
                         from components.java
                 }catch (Exception e) {
