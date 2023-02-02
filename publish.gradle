@@ -336,7 +336,8 @@ private void addDependencies(node, isSnapshot, publishDependencies) {
         try {
             node.remove(dep)
         } catch (Exception e) {
-            e.printStackTrace()
+            println("remove node error:" + e.getMessage())
+//            e.printStackTrace()
         }
     }
 
