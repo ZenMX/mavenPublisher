@@ -1,0 +1,135 @@
+apply plugin: 'maven-publish'
+apply plugin: 'java-gradle-plugin'
+
+/** example
+ ext {
+     publishGroupId = 'com.mxplay.code.plugin'
+     publishArtifactId = "skin"
+     publishVersion = "1.0.0"
+     publishPlugins = [
+         ["skinPlugin", //name
+         "com.mxplay.skin", //id
+         "com.mxplay.plugin.skin.R2GeneratorPlugin" //implementationClass
+         ],
+         ["drawablePlugin",
+          "com.mxplay.drawable.reduction",
+          "com.mxplay.plugin.drawable.DrawableDpiPlugin"
+         ]
+     ]
+ }
+ */
+
+def gradleMajorVersion() {
+    def v = gradle.gradleVersion
+    int index = v.indexOf('.')
+    return Integer.parseInt(v.substring(0, index))
+}
+
+def readProperties(name) {
+    try {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty(name)
+    } catch (Exception ignore) {
+    }
+
+    return null
+}
+
+def _getString(name) {
+    def value = ext.has(name) ? ext.get(name) : readProperties(name)
+    if (value == null) {
+        value = System.getenv(name)
+    }
+
+    return value
+}
+
+def _getPublishUrl() {
+    if (hasProperty("snapshot")) {
+        return _getString('publishUrlSnapshot')
+    } else {
+        return _getString('publishUrlRelease')
+    }
+}
+
+def _getPublishPlugins() {
+    def plugins = new ArrayList<PluginDeclaration>()
+    if (ext.has("publishPlugins")) {
+        def array = ext.get("publishPlugins")
+        for (int i = 0; i < array.size; i++) {
+            def inner = array[i]
+            def name = inner[0]
+            def id = inner[1]
+            def implClass = inner[2]
+            if (isNullOrEmpty(name) || isNullOrEmpty(id) || isNullOrEmpty(implClass)) {
+                throw new RuntimeException("'publishPlugins' arguments illegal")
+            }
+            def plugin = new PluginDeclaration(name.trim())
+            plugin.setId(id.trim())
+            plugin.setImplementationClass(implClass.trim())
+            plugins.add(plugin)
+        }
+    }
+    if (plugins.isEmpty()) {
+        throw new RuntimeException("Not found 'publishPlugins' config")
+    }
+    return plugins
+}
+
+static def isNullOrEmpty(String s) {
+    return s == null || s.trim().length() == 0
+}
+
+static def getBuildNumber() {
+    return System.getenv("BUILD_NUMBER") as Integer ?: 0
+}
+
+def _getVersion() {
+    var version = _getString("publishVersion")
+    var buildNumber = getBuildNumber()
+    if (hasProperty("snapshot")) {
+        return "${version}.${buildNumber}-SNAPSHOT"
+    } else {
+        return "${version}.${buildNumber}"
+    }
+}
+
+group = _getString("publishGroupId")
+version = _getVersion()
+
+gradlePlugin {
+    plugins {
+        def publishPlugins = _getPublishPlugins()
+        publishPlugins.each { p ->
+            it.add(p)
+        }
+    }
+}
+
+publishing {
+    repositories {
+        if (gradleMajorVersion() >= 7) {
+            maven {
+                credentials {
+                    username _getString('publisherUserName')
+                    password _getString('publisherPassword')
+                }
+
+                url _getPublishUrl()
+                allowInsecureProtocol = true
+                name _getString("publishArtifactId")
+            }
+        } else {
+            maven {
+                credentials {
+                    username _getString('publisherUserName')
+                    password _getString('publisherPassword')
+                }
+
+                url _getPublishUrl()
+                name _getString("publishArtifactId")
+            }
+        }
+    }
+}
