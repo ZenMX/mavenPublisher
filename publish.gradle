@@ -11,7 +11,6 @@ apply plugin: 'maven-publish'
  publishSource = false
  publishFile = project.file('android-ad-sdk.aar')
  publisherUserName = 'userName'
- publisherPassword = 'userPassword'
  publishUrlSnapshot = 'http://10.7.0.7:8098/nexus/content/repositories/snapshots/'
  publishDependencies = [['com.zenjoy.code', 'aol-android-ad-sdk-wrapper', "${aolVersion}"]
  ,['com.zenjoy.code', 'aol-android-google-ad-mm-adapter-wrapper', "${aolVersion}"]]
