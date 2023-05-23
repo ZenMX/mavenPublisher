@@ -82,7 +82,7 @@ static def isNullOrEmpty(String s) {
 }
 
 def _getVersion() {
-    var version = _getString("publishVersion")
+    def version = _getString("publishVersion")
     if (hasProperty("snapshot")) {
         return "${version}-SNAPSHOT"
     } else {
