@@ -90,9 +90,6 @@ def _getVersion() {
     }
 }
 
-group = _getString("publishGroupId")
-version = _getVersion()
-
 gradlePlugin {
     plugins {
         def publishPlugins = _getPublishPlugins()
@@ -103,6 +100,11 @@ gradlePlugin {
 }
 
 publishing {
+    pluginMaven(MavenPublication) {
+        groupId = _getString("publishGroupId")
+        artifactId = _getString("publishArtifactId")
+        version = _getVersion()
+    }
     repositories {
         if (gradleMajorVersion() >= 7) {
             maven {
@@ -113,7 +115,6 @@ publishing {
 
                 url _getPublishUrl()
                 allowInsecureProtocol = true
-                name _getString("publishArtifactId")
             }
         } else {
             maven {
@@ -123,7 +124,6 @@ publishing {
                 }
 
                 url _getPublishUrl()
-                name _getString("publishArtifactId")
             }
         }
     }
