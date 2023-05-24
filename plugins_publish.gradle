@@ -90,6 +90,8 @@ def _getVersion() {
     }
 }
 
+version = _getVersion()
+
 gradlePlugin {
     plugins {
         def publishPlugins = _getPublishPlugins()
