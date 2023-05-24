@@ -100,10 +100,12 @@ gradlePlugin {
 }
 
 publishing {
-    pluginMaven(MavenPublication) {
-        groupId = _getString("publishGroupId")
-        artifactId = _getString("publishArtifactId")
-        version = _getVersion()
+    publications {
+        pluginMaven(MavenPublication) {
+            groupId = _getString("publishGroupId")
+            artifactId = _getString("publishArtifactId")
+            version = _getVersion()
+        }
     }
     repositories {
         if (gradleMajorVersion() >= 7) {
