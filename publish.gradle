@@ -325,13 +325,24 @@ private addIn(added, dependency) {
     added.add(groupId + ":" + artifactId)
 }
 
+
+static def getGitHash() {
+    def sout = new StringBuilder(), serr = new StringBuilder()
+    def proc = 'git rev-parse HEAD'.execute()
+    proc.consumeProcessOutput(sout, serr)
+    proc.waitForOrKill(2000)
+    return sout.toString().trim()
+}
+
 private void addDependencies(node, isSnapshot, publishDependencies) {
+    def hash = getGitHash()
+
     if (stringNonNull('publishDesc')) {
         node.appendNode('description',
-                "${publishDesc}")
+                "${publishDesc} ${hash}")
     }else {
         node.appendNode('description',
-                project.name)
+                "${project.name} ${hash}")
     }
 
     def dep = node.get("dependencies")
