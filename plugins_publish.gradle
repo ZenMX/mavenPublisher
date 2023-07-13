@@ -33,7 +33,7 @@ def readProperties(name) {
     } catch (Exception ignore) {
     }
 
-    return ""
+    return null
 }
 
 def _getString(name) {
