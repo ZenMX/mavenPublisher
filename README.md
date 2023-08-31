@@ -11,7 +11,7 @@ suppose project structure looks like below.
 -logger
     -build.gradle
     ...other files
-```
+```..
 
 
 ## config build.gradle of root project
