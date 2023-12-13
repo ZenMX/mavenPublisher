@@ -22,13 +22,21 @@ apply plugin: 'maven-publish'
 task sourceJar(type: Jar) {
     try {
         from android.sourceSets.main.java.srcDirs
-        classifier "sources"
+        if (gradleMajorVersion() >= 8) {
+            archiveClassifier.set("sources")
+        } else {
+            classifier "sources"
+        }
     }catch (Exception e) {
         System.out.println(e.toString())
 //        e.printStackTrace()
         try {
             from sourceSets.main.allJava
-            classifier "sources"
+            if (gradleMajorVersion() >= 8) {
+                archiveClassifier.set("sources")
+            } else {
+                classifier "sources"
+            }
         }catch (Exception e1) {
             System.out.println(e1.toString())
 //            e1.printStackTrace()
